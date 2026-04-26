@@ -1,0 +1,556 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Logo from '../components/Logo.astro';
+import { products as staticProducts } from '../lib/products';
+---
+<BaseLayout title="Gorras — Kairoxx" description="Todos los modelos de gorras Kairoxx. Streetwear minimalista con acabado integrado DTF.">
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" aria-label="Inicio"><Logo /></a>
+      <nav class="desktop-nav" aria-label="Principal">
+        <a href="/#shop">Shop</a>
+        <a href="/gorras" class="nav-active">Gorras</a>
+        <a href="/#about">Brand</a>
+      </nav>
+      <div class="header-actions">
+        <button class="theme-toggle" data-theme-toggle aria-label="Cambiar tema">
+          <span data-theme-icon aria-hidden="true"></span>
+        </button>
+
+        <!-- Cart -->
+        <div class="cart-shell" data-cart-shell>
+          <button class="cart-btn" data-cart-toggle aria-label="Carrito">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <span class="cart-badge hidden" data-cart-count>0</span>
+          </button>
+          <div class="cart-menu hidden" data-cart-menu>
+            <p class="cart-menu-title">Carrito</p>
+            <div data-cart-items><p class="cart-empty">Tu carrito está vacío.</p></div>
+            <div class="cart-footer hidden" data-cart-footer>
+              <div class="cart-total-row">
+                <span>Total</span>
+                <strong data-cart-total>0€</strong>
+              </div>
+              <a href="/#shop" class="btn btn-primary full-btn">Finalizar compra</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="account-shell hidden" data-account-shell>
+          <button class="account-button" data-account-toggle aria-label="Abrir menú de cuenta">
+            <span class="account-avatar" data-account-avatar>K</span>
+          </button>
+          <div class="account-menu hidden" data-account-menu>
+            <div class="account-summary">
+              <strong data-account-name>Mi cuenta</strong>
+              <span data-account-email></span>
+            </div>
+            <a href="/#shop" class="account-item">Seguir comprando</a>
+            <a href="/admin" class="account-item hidden" data-account-admin-link>Panel admin</a>
+            <button class="account-item account-logout" data-logout-button>Cerrar sesión</button>
+          </div>
+        </div>
+
+        <button class="auth-trigger btn btn-soft" data-open-auth="login">Acceder</button>
+        <button class="auth-trigger btn btn-primary desktop-register" data-open-auth="register">Registrarse</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <section class="section gorras-section">
+      <div class="container">
+        <div class="gorras-head">
+          <div>
+            <span class="eyebrow">Catálogo completo</span>
+            <h1>Gorras.</h1>
+          </div>
+          <p class="muted" id="gorras-count">Cargando productos...</p>
+        </div>
+
+        <div class="product-grid" id="gorras-grid">
+          <div class="grid-loading">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="auth-modal" data-auth-modal hidden>
+    <div class="auth-backdrop" data-close-auth></div>
+    <div class="auth-panel card" role="dialog" aria-modal="true" aria-labelledby="auth-heading">
+      <button class="modal-close" data-close-auth aria-label="Cerrar">×</button>
+      <span class="eyebrow">Kairoxx Account</span>
+
+      <div class="auth-switch" role="tablist" aria-label="Tipo de acceso">
+        <button type="button" data-auth-tab="login" aria-pressed="true">Acceder</button>
+        <button type="button" data-auth-tab="register" aria-pressed="false">Registrarse</button>
+      </div>
+
+      <div class="auth-view" data-auth-view="login">
+        <h2 id="auth-heading">Bienvenido de nuevo</h2>
+        <p class="muted">Entra con tu cuenta para comprar y gestionar tus pedidos.</p>
+        <form class="auth-form" data-login-form method="post" action="javascript:void(0)">
+          <label><span>Email</span><input type="email" name="email" placeholder="tu@email.com" required /></label>
+          <label><span>Contraseña</span><input type="password" name="password" placeholder="••••••••" required /></label>
+          <button class="btn btn-primary full-width" type="submit">Entrar</button>
+        </form>
+      </div>
+
+      <div class="auth-view hidden" data-auth-view="register">
+        <h2>Crea tu cuenta</h2>
+        <p class="muted">Regístrate para guardar tus datos y gestionar tus pedidos.</p>
+        <form class="auth-form" data-register-form method="post" action="javascript:void(0)">
+          <label><span>Nombre</span><input type="text" name="full_name" placeholder="Tu nombre" required /></label>
+          <label><span>Email</span><input type="email" name="email" placeholder="tu@email.com" required /></label>
+          <label><span>Contraseña</span><input type="password" name="password" placeholder="Mínimo 6 caracteres" minlength="6" required /></label>
+          <label><span>Repetir contraseña</span><input type="password" name="repeat_password" placeholder="Repite tu contraseña" minlength="6" required /></label>
+          <button class="btn btn-primary full-width" type="submit">Crear cuenta</button>
+        </form>
+      </div>
+
+      <p class="auth-status muted" data-auth-status></p>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <Logo compact={true} />
+      <p class="muted">© 2025 Kairoxx — gorras minimalistas streetwear.</p>
+    </div>
+  </footer>
+
+  <script type="application/json" id="static-products" set:html={JSON.stringify(staticProducts)}></script>
+  <script is:inline>
+    (() => {
+      const SB_URL = 'https://csmyckemtowgnbvsxffj.supabase.co';
+      const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzbXlja2VtdG93Z25idnN4ZmZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMTAwNzUsImV4cCI6MjA5Mjc4NjA3NX0.E1Sc97zE_nRHdlqtfI3hz0MUsWvljOp1NtoKihMqv4Y';
+      const AUTH = SB_URL + '/auth/v1';
+      const REST = SB_URL + '/rest/v1';
+      const SESS = 'kx_session';
+
+      // ── Theme ─────────────────────────────────────────────────────────────────
+      (() => {
+        const root = document.documentElement;
+        let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        root.setAttribute('data-theme', theme);
+        const sync = () => {
+          document.querySelectorAll('[data-theme-icon]').forEach(el => {
+            el.innerHTML = theme === 'dark'
+              ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.79A9 9 0 1 1 11.21 3A7 7 0 0 0 21 12.79Z"/></svg>'
+              : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.93 4.93l1.77 1.77M17.3 17.3l1.77 1.77M2 12h2.5M19.5 12H22M4.93 19.07l1.77-1.77M17.3 6.7l1.77-1.77"/></svg>';
+          });
+        };
+        document.addEventListener('click', e => {
+          if (!e.target.closest('[data-theme-toggle]')) return;
+          theme = theme === 'dark' ? 'light' : 'dark';
+          root.setAttribute('data-theme', theme);
+          sync();
+        });
+        sync();
+      })();
+
+      // ── Session ───────────────────────────────────────────────────────────────
+      const saveSession = s => { try { localStorage.setItem(SESS, JSON.stringify(s)); } catch {} };
+      const loadSession = ()  => { try { return JSON.parse(localStorage.getItem(SESS)); } catch { return null; } };
+      const clearSession = () => { try { localStorage.removeItem(SESS); } catch {} };
+
+      // ── Supabase helpers ──────────────────────────────────────────────────────
+      const sbFetch = async (endpoint, opts = {}, token = null) => {
+        const headers = { 'Content-Type': 'application/json', 'apikey': SB_KEY, ...(token ? { 'Authorization': 'Bearer ' + token } : {}), ...(opts.headers || {}) };
+        const res = await fetch(endpoint, { ...opts, headers });
+        const body = await res.json().catch(() => ({}));
+        return { ok: res.ok, status: res.status, body };
+      };
+      const signIn  = (e, p) => sbFetch(AUTH + '/token?grant_type=password', { method: 'POST', body: JSON.stringify({ email: e, password: p }) });
+      const signUp  = (e, p) => sbFetch(AUTH + '/signup', { method: 'POST', body: JSON.stringify({ email: e, password: p }) });
+      const signOut = t => sbFetch(AUTH + '/logout', { method: 'POST' }, t);
+      const getProfile = (uid, t) => sbFetch(REST + '/profiles?id=eq.' + uid + '&select=role,full_name&limit=1', {}, t);
+      const upsertProfile = (uid, data, t) => sbFetch(REST + '/profiles', { method: 'POST', headers: { 'Prefer': 'resolution=merge-duplicates' }, body: JSON.stringify({ id: uid, ...data }) }, t);
+
+      // ── DOM refs ──────────────────────────────────────────────────────────────
+      const modal     = document.querySelector('[data-auth-modal]');
+      const status    = document.querySelector('[data-auth-status]');
+      const openBtns  = document.querySelectorAll('[data-open-auth]');
+      const tabBtns   = document.querySelectorAll('[data-auth-tab]');
+      const views     = document.querySelectorAll('[data-auth-view]');
+      const loginForm = document.querySelector('[data-login-form]');
+      const regForm   = document.querySelector('[data-register-form]');
+      const shell     = document.querySelector('[data-account-shell]');
+      const menu      = document.querySelector('[data-account-menu]');
+      const toggle    = document.querySelector('[data-account-toggle]');
+      const avatar    = document.querySelector('[data-account-avatar]');
+      const accName   = document.querySelector('[data-account-name]');
+      const accEmail  = document.querySelector('[data-account-email]');
+      const adminItem = document.querySelector('[data-account-admin-link]');
+      const logoutBtn = document.querySelector('[data-logout-button]');
+      const authTrigs = document.querySelectorAll('.auth-trigger');
+
+      const cartToggle  = document.querySelector('[data-cart-toggle]');
+      const cartMenuEl  = document.querySelector('[data-cart-menu]');
+      const cartItems   = document.querySelector('[data-cart-items]');
+      const cartCount   = document.querySelector('[data-cart-count]');
+      const cartTotal   = document.querySelector('[data-cart-total]');
+      const cartFooter  = document.querySelector('[data-cart-footer]');
+
+      // ── Cart ──────────────────────────────────────────────────────────────────
+      let cart = [];
+      const renderCart = () => {
+        const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+        const cnt   = cart.reduce((s, i) => s + i.qty, 0);
+        if (cartCount) { cartCount.textContent = cnt; cartCount.classList.toggle('hidden', cnt === 0); }
+        if (cartTotal) cartTotal.textContent = total.toFixed(2) + '€';
+        if (cartFooter) cartFooter.classList.toggle('hidden', cart.length === 0);
+        if (!cartItems) return;
+        if (!cart.length) { cartItems.innerHTML = '<p class="cart-empty">Tu carrito está vacío.</p>'; return; }
+        cartItems.innerHTML = cart.map(i => `
+          <div class="cart-item">
+            <div class="cart-item-info"><span class="cart-item-name">${i.name}</span><span class="cart-item-price">${(i.price * i.qty).toFixed(2)}€</span></div>
+            <div class="cart-item-controls">
+              <button class="qty-btn" data-cart-dec="${i.name}">−</button>
+              <span>${i.qty}</span>
+              <button class="qty-btn" data-cart-inc="${i.name}">+</button>
+            </div>
+          </div>`).join('');
+      };
+      cartMenuEl?.addEventListener('click', e => {
+        const dec = e.target.closest('[data-cart-dec]');
+        const inc = e.target.closest('[data-cart-inc]');
+        if (dec) { const item = cart.find(i => i.name === dec.dataset.cartDec); if (item) { item.qty--; if (item.qty <= 0) cart = cart.filter(i => i.name !== dec.dataset.cartDec); } renderCart(); }
+        if (inc) { const item = cart.find(i => i.name === inc.dataset.cartInc); if (item) item.qty++; renderCart(); }
+      });
+      cartToggle?.addEventListener('click', e => { e.stopPropagation(); cartMenuEl?.classList.toggle('hidden'); });
+
+      // ── Modal + Account ───────────────────────────────────────────────────────
+      const toggleModal = open => { if (!modal) return; modal.hidden = !open; document.body.style.overflow = open ? 'hidden' : ''; };
+      const setAuthTab  = tab  => {
+        tabBtns.forEach(b => b.setAttribute('aria-pressed', b.dataset.authTab === tab ? 'true' : 'false'));
+        views.forEach(v => v.classList.toggle('hidden', v.dataset.authView !== tab));
+        if (status) status.textContent = '';
+      };
+      openBtns.forEach(b => b.addEventListener('click', () => { setAuthTab(b.dataset.openAuth || 'login'); toggleModal(true); }));
+      tabBtns.forEach(b => b.addEventListener('click', () => setAuthTab(b.dataset.authTab)));
+      toggle?.addEventListener('click', () => menu?.classList.toggle('hidden'));
+      document.addEventListener('click', e => {
+        if (e.target.closest('[data-close-auth]')) toggleModal(false);
+        if (!e.target.closest('[data-account-shell]')) menu?.classList.add('hidden');
+        if (!e.target.closest('[data-cart-shell]')) cartMenuEl?.classList.add('hidden');
+      });
+
+      const updateUI = ({ loggedIn, name = '', email = '', isAdmin = false }) => {
+        shell?.classList.toggle('hidden', !loggedIn);
+        authTrigs.forEach(b => b.classList.toggle('hidden', loggedIn));
+        if (!loggedIn) { menu?.classList.add('hidden'); adminItem?.classList.add('hidden'); return; }
+        const initial = (name?.[0] || email?.[0] || 'K').toUpperCase();
+        if (avatar)   avatar.textContent  = initial;
+        if (accName)  accName.textContent  = name  || 'Mi cuenta';
+        if (accEmail) accEmail.textContent = email || '';
+        adminItem?.classList.toggle('hidden', !isAdmin);
+      };
+      const setLoading = (btn, on, text = '') => {
+        if (!btn) return;
+        if (on) { btn.dataset.orig = btn.textContent; btn.disabled = true; btn.textContent = text; }
+        else    { btn.disabled = false; btn.textContent = btn.dataset.orig || btn.textContent; }
+      };
+
+      const restoreSession = async () => {
+        const sess = loadSession();
+        if (!sess?.access_token || !sess?.user?.id) { updateUI({ loggedIn: false }); return; }
+        const { ok, body } = await getProfile(sess.user.id, sess.access_token);
+        const profile = ok && Array.isArray(body) ? body[0] : null;
+        updateUI({ loggedIn: true, name: profile?.full_name || sess.user.email?.split('@')[0] || '', email: sess.user.email || '', isAdmin: profile?.role === 'admin' });
+      };
+
+      // ── Login ─────────────────────────────────────────────────────────────────
+      loginForm?.addEventListener('submit', async e => {
+        e.preventDefault();
+        const btn = loginForm.querySelector('[type="submit"]');
+        setLoading(btn, true, 'Entrando...');
+        if (status) status.textContent = '';
+        try {
+          const fd = new FormData(loginForm);
+          const { ok, body } = await signIn(String(fd.get('email') || ''), String(fd.get('password') || ''));
+          if (!ok) { if (status) status.textContent = body?.error_description || body?.msg || 'Credenciales incorrectas.'; return; }
+          saveSession(body);
+          const { ok: pOk, body: pBody } = await getProfile(body.user.id, body.access_token);
+          const profile = pOk && Array.isArray(pBody) ? pBody[0] : null;
+          updateUI({ loggedIn: true, name: profile?.full_name || body.user.email?.split('@')[0] || '', email: body.user.email || '', isAdmin: profile?.role === 'admin' });
+          loginForm.reset(); toggleModal(false);
+        } catch { if (status) status.textContent = 'Error de red.'; }
+        finally  { setLoading(btn, false); }
+      });
+
+      // ── Register ──────────────────────────────────────────────────────────────
+      regForm?.addEventListener('submit', async e => {
+        e.preventDefault();
+        const btn = regForm.querySelector('[type="submit"]');
+        setLoading(btn, true, 'Creando cuenta...');
+        if (status) status.textContent = '';
+        try {
+          const fd = new FormData(regForm);
+          const fullName = String(fd.get('full_name') || '');
+          const email    = String(fd.get('email') || '');
+          const pass     = String(fd.get('password') || '');
+          const repeat   = String(fd.get('repeat_password') || '');
+          if (pass !== repeat) { if (status) status.textContent = 'Las contraseñas no coinciden.'; return; }
+          const { ok, body } = await signUp(email, pass);
+          if (!ok) { if (status) status.textContent = body?.error_description || body?.msg || 'Error al crear la cuenta.'; return; }
+          if (body.user) await upsertProfile(body.user.id, { full_name: fullName, role: 'customer' }, body.access_token);
+          regForm.reset();
+          if (status) status.textContent = 'Cuenta creada. Revisa tu email si tienes confirmación activada.';
+          setAuthTab('login');
+        } catch { if (status) status.textContent = 'Error de red.'; }
+        finally  { setLoading(btn, false); }
+      });
+
+      // ── Logout ────────────────────────────────────────────────────────────────
+      logoutBtn?.addEventListener('click', async () => {
+        const sess = loadSession();
+        if (sess?.access_token) await signOut(sess.access_token).catch(() => {});
+        clearSession(); updateUI({ loggedIn: false }); menu?.classList.add('hidden');
+      });
+
+      // ── Load products ─────────────────────────────────────────────────────────
+      const grid  = document.getElementById('gorras-grid');
+      const count = document.getElementById('gorras-count');
+
+      const render = (products) => {
+        if (!grid) return;
+        if (!products.length) {
+          grid.innerHTML = '<p class="empty-msg">No hay productos disponibles todavía.</p>';
+          if (count) count.textContent = '';
+          return;
+        }
+        if (count) count.textContent = products.length + ' modelo' + (products.length !== 1 ? 's' : '');
+        grid.innerHTML = products.map(p => `
+          <article class="product-card card">
+            <div class="product-media">
+              ${p.image_url ? `<img src="${p.image_url}" alt="${p.name}" loading="lazy" />` : '<div class="img-placeholder"></div>'}
+              ${p.badge ? `<span class="badge">${p.badge}</span>` : ''}
+            </div>
+            <div class="product-body">
+              <div class="product-topline"><p>${p.category || ''}</p><span>${p.color || ''}</span></div>
+              <h3>${p.name}</h3>
+              <p class="muted">${p.description || ''}</p>
+              <div class="product-bottom">
+                <strong>${Number(p.price).toFixed(0)}€</strong>
+                <button class="btn btn-primary add-cart" data-name="${p.name}" data-price="${p.price}">Añadir</button>
+              </div>
+            </div>
+          </article>`).join('');
+
+        grid.querySelectorAll('.add-cart').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const name  = btn.dataset.name;
+            const price = parseFloat(btn.dataset.price) || 0;
+            const existing = cart.find(i => i.name === name);
+            if (existing) existing.qty++;
+            else cart.push({ name, price, qty: 1 });
+            renderCart();
+            btn.textContent = '✓ Añadido';
+            setTimeout(() => { btn.textContent = 'Añadir'; }, 1400);
+            cartMenuEl?.classList.remove('hidden');
+            setTimeout(() => cartMenuEl?.classList.add('hidden'), 2200);
+          });
+        });
+      };
+
+      let staticProducts = [];
+      try { staticProducts = JSON.parse(document.getElementById('static-products')?.textContent || '[]'); } catch {}
+      const toShopFormat = p => ({ name: p.name, price: p.price, color: p.color, category: p.category, badge: p.badge || '', image_url: p.image_url || p.image || '', description: p.description });
+
+      fetch(`${SB_URL}/rest/v1/products?select=*&visible=eq.true&order=created_at.desc`, {
+        headers: { 'apikey': SB_KEY, 'Accept': 'application/json' }
+      })
+        .then(r => r.ok ? r.json() : Promise.reject(r.status))
+        .then(data => render(Array.isArray(data) ? data : []))
+        .catch(() => render(staticProducts.map(toShopFormat)));
+
+      setAuthTab('login');
+      restoreSession();
+    })();
+  </script>
+</BaseLayout>
+
+<style>
+  .hidden { display: none !important; }
+
+  /* ── Header ──────────────────────────────────────────────────────────── */
+  .site-header {
+    position: sticky; top: 0; z-index: 40;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    background: color-mix(in srgb, var(--color-bg) 82%, transparent);
+    border-bottom: 1px solid var(--color-divider);
+  }
+  .header-inner {
+    min-height: 72px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--space-4);
+  }
+  .desktop-nav {
+    display: flex;
+    gap: var(--space-6);
+    font-size: var(--text-sm);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .desktop-nav a { color: var(--color-text-muted); transition: color 180ms ease; }
+  .desktop-nav a:hover,
+  .desktop-nav .nav-active { color: var(--color-text); }
+  .header-actions { display: flex; align-items: center; gap: var(--space-2); position: relative; }
+  .theme-toggle {
+    width: 44px; height: 44px; border-radius: 999px;
+    border: 1px solid var(--color-border); background: transparent;
+    display: inline-grid; place-items: center; cursor: pointer;
+    transition: background 180ms ease;
+  }
+  .theme-toggle:hover { background: var(--color-surface-offset); }
+
+  /* ── Page ────────────────────────────────────────────────────────────── */
+  .gorras-section { min-height: calc(100dvh - 72px); }
+  .gorras-head {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: var(--space-4); flex-wrap: wrap;
+    margin-bottom: var(--space-10);
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    text-transform: uppercase;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+    margin-top: var(--space-3);
+  }
+
+  /* ── Grid ────────────────────────────────────────────────────────────── */
+  .product-grid { display: grid; gap: var(--space-4); }
+  .product-card { overflow: hidden; transition: transform 180ms ease; background: #ffffff; color: #111; border-radius: var(--radius-lg); border: 1px solid var(--color-border); }
+  .product-card:hover { transform: translateY(-3px); }
+  .product-media { position: relative; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 0.75rem; }
+  .product-media img { max-width: 100%; max-height: 320px; width: auto; height: auto; object-fit: contain; display: block; }
+  .img-placeholder { width: 100%; aspect-ratio: 4 / 4.5; background: var(--color-surface-offset); }
+  .badge {
+    position: absolute; top: var(--space-4); left: var(--space-4);
+    background: color-mix(in srgb, var(--color-bg) 88%, transparent);
+    border: 1px solid var(--color-border);
+    padding: 0.45rem 0.75rem; border-radius: var(--radius-full);
+    font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.14em;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  }
+  .product-body { padding: var(--space-5); display: grid; gap: var(--space-3); }
+  .product-topline {
+    display: flex; justify-content: space-between; gap: var(--space-3);
+    color: var(--color-text-muted);
+    font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.12em;
+  }
+  .product-body h3 {
+    font-size: var(--text-lg); line-height: 1.05;
+    font-family: var(--font-display); letter-spacing: -0.02em;
+  }
+  .product-bottom {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--space-4); margin-top: var(--space-1);
+  }
+  .product-bottom strong { font-size: var(--text-lg); font-family: var(--font-display); }
+  .muted { color: var(--color-text-muted); }
+
+  /* ── Loading skeleton ────────────────────────────────────────────────── */
+  .grid-loading {
+    grid-column: 1 / -1;
+    display: flex; gap: var(--space-4);
+  }
+  .grid-loading span {
+    flex: 1; height: 420px; border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    animation: pulse 1.4s ease-in-out infinite alternate;
+  }
+  .grid-loading span:nth-child(2) { animation-delay: 0.2s; }
+  .grid-loading span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes pulse { from { opacity: 0.5; } to { opacity: 1; } }
+
+  .empty-msg { color: var(--color-text-muted); padding: var(--space-8) 0; }
+
+  /* ── Cart ────────────────────────────────────────────────────────────── */
+  .cart-shell { position: relative; }
+  .cart-btn {
+    width: 44px; height: 44px; border-radius: 999px;
+    border: 1px solid var(--color-border); background: transparent;
+    display: inline-grid; place-items: center; cursor: pointer; position: relative;
+    transition: background 180ms ease;
+  }
+  .cart-btn:hover { background: var(--color-surface-offset); }
+  .cart-badge {
+    position: absolute; top: 4px; right: 4px;
+    min-width: 18px; height: 18px; border-radius: 999px;
+    background: var(--color-text); color: var(--color-text-inverse);
+    font-size: 0.65rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; padding: 0 4px;
+    pointer-events: none;
+  }
+  .cart-menu {
+    position: absolute; right: 0; top: calc(100% + 0.6rem);
+    width: min(300px, calc(100vw - 2rem));
+    border-radius: var(--radius-lg); border: 1px solid var(--color-border);
+    background: var(--color-surface-2); box-shadow: var(--shadow-md); overflow: hidden; z-index: 50;
+  }
+  .cart-menu-title { padding: 0.9rem 1rem 0.6rem; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.16em; color: var(--color-text-muted); border-bottom: 1px solid var(--color-divider); }
+  .cart-empty { padding: 1.2rem 1rem; font-size: var(--text-sm); color: var(--color-text-muted); text-align: center; }
+  .cart-item { padding: 0.75rem 1rem; border-bottom: 1px solid var(--color-divider); display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+  .cart-item-info { display: grid; gap: 0.1rem; }
+  .cart-item-name { font-size: var(--text-sm); font-weight: 500; }
+  .cart-item-price { font-size: var(--text-xs); color: var(--color-text-muted); }
+  .cart-item-controls { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); }
+  .qty-btn { width: 26px; height: 26px; border-radius: 999px; border: 1px solid var(--color-border); background: transparent; cursor: pointer; display: grid; place-items: center; font-size: 1rem; line-height: 1; transition: background 180ms ease; }
+  .qty-btn:hover { background: var(--color-surface-offset); }
+  .cart-footer { padding: 0.9rem 1rem; display: grid; gap: var(--space-3); }
+  .cart-total-row { display: flex; justify-content: space-between; align-items: center; font-size: var(--text-sm); }
+  .full-btn { width: 100%; }
+
+  /* ── Account ──────────────────────────────────────────────────────────── */
+  .account-shell { position: relative; }
+  .account-button { width: 44px; height: 44px; border-radius: 999px; border: 2px solid var(--color-border); background: var(--color-text); color: var(--color-text-inverse); display: inline-grid; place-items: center; cursor: pointer; transition: transform 180ms ease; }
+  .account-button:hover { transform: scale(1.05); }
+  .account-avatar { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.02em; }
+  .account-menu { position: absolute; right: 0; top: calc(100% + 0.6rem); width: min(260px, calc(100vw - 2rem)); padding: 0.5rem; border-radius: var(--radius-lg); border: 1px solid var(--color-border); background: var(--color-surface-2); box-shadow: var(--shadow-md); display: grid; gap: 0.2rem; z-index: 50; }
+  .account-summary { padding: 0.8rem 0.9rem 0.9rem; border-bottom: 1px solid var(--color-divider); display: grid; gap: 0.15rem; margin-bottom: 0.2rem; }
+  .account-summary strong { font-size: var(--text-sm); }
+  .account-summary span { font-size: var(--text-xs); color: var(--color-text-muted); word-break: break-word; }
+  .account-item { min-height: 42px; width: 100%; padding: 0.7rem 0.9rem; border-radius: var(--radius-md); color: var(--color-text); background: transparent; border: 0; text-align: left; display: flex; align-items: center; font-size: var(--text-sm); cursor: pointer; transition: background 180ms ease; }
+  .account-item:hover { background: var(--color-surface-offset); }
+  .account-logout { font: inherit; }
+
+  /* ── Auth Modal ───────────────────────────────────────────────────────── */
+  .auth-modal[hidden] { display: none; }
+  .auth-modal { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: var(--space-4); }
+  .auth-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.55); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .auth-panel { position: relative; z-index: 1; width: min(100%, 520px); padding: clamp(var(--space-5), 4vw, var(--space-8)); background: var(--color-surface-2); }
+  .modal-close { position: absolute; right: var(--space-4); top: var(--space-4); width: 40px; height: 40px; border-radius: 999px; border: 1px solid var(--color-border); background: transparent; cursor: pointer; font-size: 1.2rem; line-height: 1; color: var(--color-text-muted); transition: background 180ms ease; }
+  .modal-close:hover { background: var(--color-surface-offset); color: var(--color-text); }
+  .auth-switch { display: inline-grid; grid-template-columns: repeat(2, 1fr); gap: 0.3rem; padding: 0.3rem; border: 1px solid var(--color-border); border-radius: var(--radius-full); margin: var(--space-5) 0 var(--space-4); width: 100%; }
+  .auth-switch button { min-height: 38px; padding: 0.6rem 1rem; border-radius: var(--radius-full); border: 0; background: transparent; cursor: pointer; font-size: var(--text-sm); font-weight: 500; transition: all 180ms ease; }
+  .auth-switch button[aria-pressed='true'] { background: var(--color-text); color: var(--color-text-inverse); }
+  .auth-view h2 { font-size: var(--text-lg); margin-top: var(--space-2); }
+  .auth-view p { margin-top: var(--space-2); }
+  .auth-form { margin-top: var(--space-5); display: grid; gap: var(--space-4); }
+  .auth-form label { display: grid; gap: var(--space-2); font-size: var(--text-sm); }
+  .auth-form input { min-height: 48px; border-radius: var(--radius-md); border: 1px solid var(--color-border); padding: 0 1rem; background: var(--color-bg); transition: border-color 180ms ease; }
+  .auth-form input:focus { outline: none; border-color: var(--color-text); }
+  .full-width { width: 100%; }
+  .auth-status { margin-top: var(--space-4); font-size: var(--text-sm); min-height: 1.2em; }
+
+  /* ── Footer ──────────────────────────────────────────────────────────── */
+  .site-footer { padding: var(--space-8) 0 var(--space-10); border-top: 1px solid var(--color-divider); }
+  .footer-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-4); }
+
+  /* ── Responsive ──────────────────────────────────────────────────────── */
+  @media (min-width: 820px) {
+    .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (max-width: 819px) {
+    .desktop-nav { display: none; }
+    .desktop-register { display: none; }
+    .product-bottom { flex-direction: column; align-items: stretch; }
+  }
+</style>

@@ -1,0 +1,701 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Logo from '../../components/Logo.astro';
+import { products as staticProducts } from '../../lib/products';
+---
+<BaseLayout title="Kairoxx Admin" description="Panel de administración Kairoxx.">
+  <div class="admin-layout">
+
+    <!-- ── Sidebar ─────────────────────────────────────────────────────────── -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <Logo compact={true} />
+        <span class="sidebar-tag">Admin</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-nav="products">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          Productos
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="/" class="sidebar-action">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          Volver a la tienda
+        </a>
+        <button class="sidebar-action danger" data-logout>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          Cerrar sesión
+        </button>
+      </div>
+    </aside>
+
+    <!-- ── Main content ─────────────────────────────────────────────────────── -->
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <div>
+          <h1 class="admin-title">Productos</h1>
+          <p class="admin-subtitle muted" data-products-count>Cargando...</p>
+        </div>
+        <button class="btn btn-primary" data-open-form>+ Nuevo producto</button>
+      </header>
+
+      <div class="admin-body">
+        <!-- Auth error state -->
+        <div class="state-panel hidden" data-state-auth>
+          <p>Acceso denegado. <a href="/">Volver a la tienda</a> e inicia sesión como admin.</p>
+        </div>
+
+        <!-- Products table -->
+        <div class="products-wrap hidden" data-products-wrap>
+          <table class="products-table">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Categoría</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Visible</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody data-products-body>
+              <tr><td colspan="6" class="empty-row">Cargando productos...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Product modal ────────────────────────────────────────────────────── -->
+  <div class="product-modal" data-product-modal hidden>
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-panel card">
+      <div class="modal-header">
+        <h2 data-modal-title>Nuevo producto</h2>
+        <button class="modal-close" data-close-modal>×</button>
+      </div>
+
+      <form class="product-form" data-product-form method="post" action="javascript:void(0)">
+        <input type="hidden" name="id" />
+
+        <div class="form-row">
+          <label>
+            <span>Nombre *</span>
+            <input type="text" name="name" placeholder="Kairoxx Core Black" required />
+          </label>
+          <label>
+            <span>Slug *</span>
+            <input type="text" name="slug" placeholder="core-black" required />
+          </label>
+        </div>
+
+        <div class="form-row three">
+          <label>
+            <span>Precio (€) *</span>
+            <input type="number" name="price" min="0" step="0.01" placeholder="29" required />
+          </label>
+          <label>
+            <span>Stock *</span>
+            <input type="number" name="stock" min="0" step="1" placeholder="20" required />
+          </label>
+          <label>
+            <span>Color *</span>
+            <input type="text" name="color" placeholder="Negro" required />
+          </label>
+        </div>
+
+        <div class="form-row">
+          <label>
+            <span>Categoría *</span>
+            <input type="text" name="category" placeholder="Snapback" required />
+          </label>
+          <label>
+            <span>Badge</span>
+            <input type="text" name="badge" placeholder="Best seller" />
+          </label>
+        </div>
+
+        <label>
+          <span>URL imagen *</span>
+          <input type="url" name="image_url" placeholder="https://..." required />
+        </label>
+
+        <label>
+          <span>Descripción *</span>
+          <textarea name="description" rows="3" placeholder="Gorra minimalista negra..." required></textarea>
+        </label>
+
+        <label class="checkbox-row">
+          <input type="checkbox" name="visible" checked />
+          <span>Visible en tienda</span>
+        </label>
+
+        <p class="form-status muted" data-form-status></p>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" data-close-modal>Cancelar</button>
+          <button type="submit" class="btn btn-primary" data-form-submit>Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="application/json" id="static-products" set:html={JSON.stringify(staticProducts)}></script>
+
+  <script is:inline>
+    (() => {
+      const SB_URL = 'https://csmyckemtowgnbvsxffj.supabase.co';
+      const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzbXlja2VtdG93Z25idnN4ZmZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMTAwNzUsImV4cCI6MjA5Mjc4NjA3NX0.E1Sc97zE_nRHdlqtfI3hz0MUsWvljOp1NtoKihMqv4Y';
+      const AUTH = SB_URL + '/auth/v1';
+      const REST = SB_URL + '/rest/v1';
+      const SESS = 'kx_session';
+
+      // ── Session ──────────────────────────────────────────────────────────
+      const loadSession = () => { try { return JSON.parse(localStorage.getItem(SESS)); } catch { return null; } };
+      const clearSession = () => { try { localStorage.removeItem(SESS); } catch {} };
+
+      // ── Fetch helper ─────────────────────────────────────────────────────
+      const sbFetch = async (endpoint, opts = {}, token = null) => {
+        const headers = {
+          'Content-Type': 'application/json',
+          'apikey': SB_KEY,
+          'Accept': 'application/json',
+          ...(token ? { 'Authorization': 'Bearer ' + token } : {}),
+          ...(opts.headers || {})
+        };
+        const res = await fetch(endpoint, { ...opts, headers });
+        const body = await res.json().catch(() => ({}));
+        return { ok: res.ok, status: res.status, body };
+      };
+
+      // ── DOM refs ─────────────────────────────────────────────────────────
+      const productModal  = document.querySelector('[data-product-modal]');
+      const productForm   = document.querySelector('[data-product-form]');
+      const productsBody  = document.querySelector('[data-products-body]');
+      const productsCount = document.querySelector('[data-products-count]');
+      const formStatus    = document.querySelector('[data-form-status]');
+      const modalTitle    = document.querySelector('[data-modal-title]');
+      const formSubmitBtn = document.querySelector('[data-form-submit]');
+      const stateAuth     = document.querySelector('[data-state-auth]');
+      const productsWrap  = document.querySelector('[data-products-wrap]');
+
+      let token = null;
+      let editingId = null;
+
+      // ── Static products fallback ──────────────────────────────────────────
+      let staticProducts = [];
+      try {
+        staticProducts = JSON.parse(document.getElementById('static-products')?.textContent || '[]');
+      } catch {}
+
+      // ── Auth check ───────────────────────────────────────────────────────
+      const init = async () => {
+        const sess = loadSession();
+        if (!sess?.access_token || !sess?.user?.id) {
+          showAuthError('No hay sesión activa.'); return;
+        }
+
+        const { ok, body } = await sbFetch(
+          REST + '/profiles?id=eq.' + sess.user.id + '&select=role&limit=1',
+          {}, sess.access_token
+        );
+
+        const profile = ok && Array.isArray(body) ? body[0] : null;
+        if (!profile || profile.role !== 'admin') {
+          showAuthError('Tu cuenta no tiene permisos de admin. Cierra sesión y vuelve a entrar.'); return;
+        }
+
+        token = sess.access_token;
+        productsWrap?.classList.remove('hidden');
+        loadProducts();
+      };
+
+      const showAuthError = (msg = 'Acceso denegado.') => {
+        stateAuth?.classList.remove('hidden');
+        productsWrap?.classList.add('hidden');
+        if (stateAuth) stateAuth.querySelector('p').innerHTML = msg + ' <a href="/">Volver a la tienda</a>';
+        if (productsCount) productsCount.textContent = '';
+      };
+
+      // ── Products ─────────────────────────────────────────────────────────
+      const loadProducts = async () => {
+        if (productsCount) productsCount.textContent = 'Cargando...';
+        const { ok, body } = await sbFetch(
+          REST + '/products?select=*&order=created_at.desc',
+          {}, token
+        );
+
+        let products = ok && Array.isArray(body) ? body : [];
+
+        // If Supabase table is empty, show static products as reference
+        if (!products.length && staticProducts.length) {
+          products = staticProducts.map((p, i) => ({
+            id: 'static-' + i,
+            name: p.name,
+            slug: p.slug,
+            price: p.price,
+            stock: 0,
+            color: p.color,
+            category: p.category,
+            badge: p.badge || '',
+            image_url: p.image,
+            description: p.description,
+            visible: true,
+            _static: true
+          }));
+        }
+
+        if (productsCount) productsCount.textContent = products.length + ' producto' + (products.length !== 1 ? 's' : '');
+        renderProducts(products);
+      };
+
+      const renderProducts = (products) => {
+        if (!productsBody) return;
+
+        if (!products.length) {
+          productsBody.innerHTML = '<tr><td colspan="6" class="empty-row">No hay productos todavía. Crea el primero.</td></tr>';
+          return;
+        }
+
+        productsBody.innerHTML = products.map(p => `
+          <tr>
+            <td>
+              <div class="table-product">
+                <img src="${p.image_url || ''}" alt="${p.name}" onerror="this.style.display='none'" />
+                <div>
+                  <strong>${p.name}</strong>
+                  <span>${p.color || ''}</span>
+                </div>
+              </div>
+            </td>
+            <td>${p.category || '—'}</td>
+            <td>${Number(p.price).toFixed(2)}€</td>
+            <td>${p.stock}</td>
+            <td><button class="pill ${p.visible ? 'pill-on' : 'pill-off'} pill-toggle" data-toggle-id="${p.id}" data-toggle-visible="${p.visible}">${p.visible ? 'Sí' : 'No'}</button></td>
+            <td>
+              ${p._static
+                ? `<span class="pill pill-off" style="font-size:0.65rem">Solo tienda</span>`
+                : `<div class="row-actions">
+                    <button class="action-btn" data-edit='${JSON.stringify(p).replace(/'/g, "&#39;")}'>Editar</button>
+                    <button class="action-btn danger" data-delete-id="${p.id}">Eliminar</button>
+                  </div>`
+              }
+            </td>
+          </tr>
+        `).join('');
+      };
+
+      // ── Modal ─────────────────────────────────────────────────────────────
+      const openModal = (product = null) => {
+        if (!productModal || !productForm) return;
+        productForm.reset();
+        editingId = null;
+
+        if (product) {
+          editingId = product.id;
+          if (modalTitle) modalTitle.textContent = 'Editar producto';
+          if (formSubmitBtn) formSubmitBtn.textContent = 'Guardar cambios';
+          const fields = ['name', 'slug', 'price', 'stock', 'color', 'category', 'badge', 'image_url', 'description'];
+          fields.forEach(f => {
+            const el = productForm.querySelector('[name="' + f + '"]');
+            if (el) el.value = product[f] ?? '';
+          });
+          const visibleEl = productForm.querySelector('[name="visible"]');
+          if (visibleEl) visibleEl.checked = product.visible !== false;
+        } else {
+          if (modalTitle) modalTitle.textContent = 'Nuevo producto';
+          if (formSubmitBtn) formSubmitBtn.textContent = 'Guardar';
+          const visibleEl = productForm.querySelector('[name="visible"]');
+          if (visibleEl) visibleEl.checked = true;
+        }
+
+        if (formStatus) formStatus.textContent = '';
+        productModal.hidden = false;
+        document.body.style.overflow = 'hidden';
+      };
+
+      const closeModal = () => {
+        if (!productModal) return;
+        productModal.hidden = true;
+        document.body.style.overflow = '';
+        editingId = null;
+      };
+
+      // ── Form submit ───────────────────────────────────────────────────────
+      productForm?.addEventListener('submit', async e => {
+        e.preventDefault();
+        if (!formSubmitBtn) return;
+        const origText = formSubmitBtn.textContent;
+        formSubmitBtn.disabled = true;
+        formSubmitBtn.textContent = 'Guardando...';
+        if (formStatus) formStatus.textContent = '';
+
+        try {
+          const fd = new FormData(productForm);
+          const payload = {
+            name:        String(fd.get('name')        || ''),
+            slug:        String(fd.get('slug')        || ''),
+            price:       Number(fd.get('price')       || 0),
+            stock:       Number(fd.get('stock')       || 0),
+            color:       String(fd.get('color')       || ''),
+            category:    String(fd.get('category')    || ''),
+            badge:       String(fd.get('badge')       || ''),
+            image_url:   String(fd.get('image_url')   || ''),
+            description: String(fd.get('description') || ''),
+            visible:     fd.get('visible') === 'on'
+          };
+
+          let ok, body;
+          if (editingId) {
+            ({ ok, body } = await sbFetch(
+              REST + '/products?id=eq.' + editingId,
+              { method: 'PATCH', headers: { 'Prefer': 'return=representation' }, body: JSON.stringify(payload) },
+              token
+            ));
+          } else {
+            ({ ok, body } = await sbFetch(
+              REST + '/products',
+              { method: 'POST', headers: { 'Prefer': 'return=representation' }, body: JSON.stringify(payload) },
+              token
+            ));
+          }
+
+          if (!ok) {
+            if (formStatus) formStatus.textContent = body?.message || body?.error || 'Error al guardar.';
+            return;
+          }
+
+          closeModal();
+          await loadProducts();
+        } catch (err) {
+          if (formStatus) formStatus.textContent = 'Error de red.';
+        } finally {
+          formSubmitBtn.disabled = false;
+          formSubmitBtn.textContent = origText;
+        }
+      });
+
+      // ── Table actions ─────────────────────────────────────────────────────
+      productsBody?.addEventListener('click', async e => {
+        const editBtn = e.target.closest('[data-edit]');
+        if (editBtn) {
+          try { openModal(JSON.parse(editBtn.dataset.edit)); } catch {}
+          return;
+        }
+
+        const toggleBtn = e.target.closest('[data-toggle-id]');
+        if (toggleBtn) {
+          const id      = toggleBtn.dataset.toggleId;
+          const newVal  = toggleBtn.dataset.toggleVisible === 'true' ? false : true;
+          toggleBtn.disabled = true;
+          const { ok, body } = await sbFetch(
+            REST + '/products?id=eq.' + id,
+            { method: 'PATCH', headers: { 'Prefer': 'return=representation' }, body: JSON.stringify({ visible: newVal }) },
+            token
+          );
+          if (ok) {
+            await loadProducts();
+          } else {
+            toggleBtn.disabled = false;
+            alert('Error al actualizar: ' + (body?.message || body?.error || JSON.stringify(body)));
+          }
+          return;
+        }
+
+        const deleteBtn = e.target.closest('[data-delete-id]');
+        if (deleteBtn) {
+          if (!confirm('¿Eliminar este producto? Esta acción no se puede deshacer.')) return;
+          deleteBtn.disabled = true;
+          deleteBtn.textContent = '...';
+          const { ok } = await sbFetch(
+            REST + '/products?id=eq.' + deleteBtn.dataset.deleteId,
+            { method: 'DELETE' },
+            token
+          );
+          if (ok) await loadProducts();
+          else { deleteBtn.disabled = false; deleteBtn.textContent = 'Eliminar'; }
+        }
+      });
+
+      // ── Logout ────────────────────────────────────────────────────────────
+      document.querySelector('[data-logout]')?.addEventListener('click', async () => {
+        if (token) {
+          await fetch(AUTH + '/logout', {
+            method: 'POST',
+            headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + token }
+          }).catch(() => {});
+        }
+        clearSession();
+        window.location.href = '/';
+      });
+
+      // ── Open/close modal ──────────────────────────────────────────────────
+      document.querySelector('[data-open-form]')?.addEventListener('click', () => openModal());
+      document.addEventListener('click', e => {
+        if (e.target.closest('[data-close-modal]')) closeModal();
+      });
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeModal();
+      });
+
+      init();
+    })();
+  </script>
+</BaseLayout>
+
+<style>
+  .hidden { display: none !important; }
+
+  /* ── Layout ──────────────────────────────────────────────────────────── */
+  .admin-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100dvh;
+  }
+
+  /* ── Sidebar ─────────────────────────────────────────────────────────── */
+  .sidebar {
+    background: #0f0f0f;
+    color: #e8e6e0;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-6) 0;
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    overflow-y: auto;
+  }
+  .sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 0 var(--space-5) var(--space-6);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: var(--space-4);
+  }
+  .sidebar-brand svg * { stroke: #e8e6e0 !important; fill: none !important; }
+  .sidebar-tag {
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: rgba(255,255,255,0.35);
+    margin-top: 2px;
+  }
+  .sidebar-nav {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0 var(--space-3);
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 44px;
+    padding: 0.7rem var(--space-4);
+    border-radius: var(--radius-md);
+    border: 0;
+    background: transparent;
+    color: rgba(255,255,255,0.5);
+    font: inherit;
+    font-size: var(--text-sm);
+    cursor: pointer;
+    text-align: left;
+    transition: all 160ms ease;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
+  .nav-item.active { background: rgba(255,255,255,0.1); color: #fff; font-weight: 500; }
+  .sidebar-footer {
+    padding: var(--space-4) var(--space-3) 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    margin-top: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .sidebar-action {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 44px;
+    padding: 0.7rem var(--space-4);
+    border-radius: var(--radius-md);
+    border: 0;
+    background: transparent;
+    color: rgba(255,255,255,0.5);
+    font: inherit;
+    font-size: var(--text-sm);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 160ms ease;
+    text-align: left;
+  }
+  .sidebar-action:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
+  .sidebar-action.danger:hover { color: #ff6b6b; }
+
+  /* ── Main ────────────────────────────────────────────────────────────── */
+  .admin-main {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg);
+    min-height: 100dvh;
+  }
+  .admin-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-6) var(--space-8);
+    border-bottom: 1px solid var(--color-divider);
+    background: var(--color-surface-2);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .admin-title {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    text-transform: uppercase;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin: 0;
+  }
+  .admin-subtitle { font-size: var(--text-sm); margin-top: 0.2rem; }
+  .admin-body { padding: var(--space-6) var(--space-8); flex: 1; }
+
+  /* ── State panels ────────────────────────────────────────────────────── */
+  .state-panel {
+    padding: var(--space-8);
+    text-align: center;
+    color: var(--color-text-muted);
+  }
+  .state-panel a { text-decoration: underline; }
+
+  /* ── Products table ──────────────────────────────────────────────────── */
+  .products-wrap { overflow-x: auto; border-radius: var(--radius-lg); border: 1px solid var(--color-border); background: var(--color-surface-2); }
+  .products-table { width: 100%; border-collapse: collapse; min-width: 700px; }
+  .products-table th,
+  .products-table td {
+    text-align: left;
+    padding: 1rem var(--space-5);
+    border-bottom: 1px solid var(--color-divider);
+    vertical-align: middle;
+  }
+  .products-table tbody tr:last-child td { border-bottom: 0; }
+  .products-table th {
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-text-muted);
+    background: var(--color-surface);
+  }
+  .products-table tbody tr:hover { background: var(--color-surface); }
+  :global(.table-product) { display: flex; align-items: center; gap: var(--space-3); }
+  :global(.table-product img) { width: 52px; height: 52px; object-fit: cover; border-radius: var(--radius-md); border: 1px solid var(--color-border); background: var(--color-surface-offset); flex-shrink: 0; }
+  :global(.table-product strong) { display: block; font-size: var(--text-sm); }
+  :global(.table-product span) { font-size: var(--text-xs); color: var(--color-text-muted); }
+  :global(.empty-row) { text-align: center; color: var(--color-text-muted); padding: var(--space-10) !important; }
+  :global(.pill) { display: inline-flex; align-items: center; padding: 0.25rem 0.65rem; border-radius: var(--radius-full); font-size: var(--text-xs); font-weight: 500; letter-spacing: 0.06em; }
+  :global(.pill-on)  { background: rgba(34,197,94,0.12); color: #16a34a; }
+  :global(.pill-off) { background: var(--color-surface-offset); color: var(--color-text-muted); }
+  :global(.pill-toggle) { border: 0; cursor: pointer; transition: opacity 160ms ease; font: inherit; }
+  :global(.pill-toggle:hover) { opacity: 0.75; }
+  :global(.pill-toggle:disabled) { opacity: 0.4; cursor: wait; }
+  :global(.row-actions) { display: flex; gap: var(--space-2); }
+  :global(.action-btn) { min-height: 34px; padding: 0.4rem 0.85rem; border-radius: var(--radius-full); border: 1px solid var(--color-border); background: transparent; color: var(--color-text); font: inherit; font-size: var(--text-xs); cursor: pointer; transition: all 160ms ease; }
+  :global(.action-btn:hover) { background: var(--color-surface-offset); }
+  :global(.action-btn.danger:hover) { border-color: #ef4444; color: #ef4444; }
+
+  /* ── Product modal ───────────────────────────────────────────────────── */
+  .product-modal[hidden] { display: none; }
+  .product-modal {
+    position: fixed; inset: 0; z-index: 80;
+    display: grid; place-items: center;
+    padding: var(--space-4);
+  }
+  .modal-backdrop {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .modal-panel {
+    position: relative; z-index: 1;
+    width: min(100%, 620px);
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+    padding: var(--space-6);
+    background: var(--color-surface-2);
+  }
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-5);
+  }
+  .modal-header h2 { font-family: var(--font-display); font-size: var(--text-lg); text-transform: uppercase; letter-spacing: -0.02em; margin: 0; }
+  .modal-close {
+    width: 38px; height: 38px;
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+    background: transparent;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: var(--color-text-muted);
+    transition: all 160ms ease;
+  }
+  .modal-close:hover { background: var(--color-surface-offset); color: var(--color-text); }
+  .product-form { display: grid; gap: var(--space-4); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+  .form-row.three { grid-template-columns: repeat(3, 1fr); }
+  .product-form label { display: grid; gap: var(--space-2); font-size: var(--text-sm); }
+  .product-form input,
+  .product-form textarea {
+    width: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+    padding: 0.75rem 1rem;
+    font: inherit;
+    font-size: var(--text-sm);
+    transition: border-color 160ms ease;
+  }
+  .product-form input:focus,
+  .product-form textarea:focus { outline: none; border-color: var(--color-text); }
+  .checkbox-row { display: flex !important; flex-direction: row !important; align-items: center; gap: var(--space-3); }
+  .checkbox-row input { width: 18px; height: 18px; }
+  .form-status { font-size: var(--text-sm); min-height: 1.2em; }
+  .form-actions {
+    display: flex;
+    gap: var(--space-3);
+    justify-content: flex-end;
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-divider);
+  }
+
+  /* ── Responsive ──────────────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .admin-layout { grid-template-columns: 1fr; }
+    .sidebar {
+      position: static;
+      height: auto;
+      flex-direction: row;
+      align-items: center;
+      padding: var(--space-3) var(--space-4);
+      gap: var(--space-3);
+    }
+    .sidebar-brand { padding: 0; border: 0; margin: 0; }
+    .sidebar-nav { flex-direction: row; flex: 1; padding: 0; }
+    .sidebar-footer { flex-direction: row; padding: 0; border: 0; margin: 0; }
+    .sidebar-tag { display: none; }
+    .admin-topbar,
+    .admin-body { padding: var(--space-4); }
+    .form-row,
+    .form-row.three { grid-template-columns: 1fr; }
+  }
+</style>
