@@ -17,26 +17,7 @@ import { products as staticProducts } from '../lib/products';
           <span data-theme-icon aria-hidden="true"></span>
         </button>
 
-        <!-- Cart -->
-        <div class="cart-shell" data-cart-shell>
-          <button class="cart-btn" data-cart-toggle aria-label="Carrito">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-            <span class="cart-badge hidden" data-cart-count>0</span>
-          </button>
-          <div class="cart-menu hidden" data-cart-menu>
-            <p class="cart-menu-title">Carrito</p>
-            <div data-cart-items><p class="cart-empty">Tu carrito está vacío.</p></div>
-            <div class="cart-footer hidden" data-cart-footer>
-              <div class="cart-total-row">
-                <span>Total</span>
-                <strong data-cart-total>0€</strong>
-              </div>
-              <a href="/#shop" class="btn btn-primary full-btn">Finalizar compra</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="account-shell hidden" data-account-shell>
+<div class="account-shell hidden" data-account-shell>
           <button class="account-button" data-account-toggle aria-label="Abrir menú de cuenta">
             <span class="account-avatar" data-account-avatar>K</span>
           </button>
@@ -52,7 +33,6 @@ import { products as staticProducts } from '../lib/products';
         </div>
 
         <button class="auth-trigger btn btn-soft" data-open-auth="login">Acceder</button>
-        <button class="auth-trigger btn btn-primary desktop-register" data-open-auth="register">Registrarse</button>
       </div>
     </div>
   </header>
@@ -335,7 +315,7 @@ import { products as staticProducts } from '../lib/products';
               <p class="muted">${p.description || ''}</p>
               <div class="product-bottom">
                 <strong>${Number(p.price).toFixed(0)}€</strong>
-                <button class="btn btn-primary add-cart" data-name="${p.name}" data-price="${p.price}">Añadir</button>
+                <span class="coming-soon-tag">Próximamente</span>
               </div>
             </div>
           </article>`).join('');
@@ -471,6 +451,15 @@ import { products as staticProducts } from '../lib/products';
   @keyframes pulse { from { opacity: 0.5; } to { opacity: 1; } }
 
   .empty-msg { color: var(--color-text-muted); padding: var(--space-8) 0; }
+  .coming-soon-tag {
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    padding: 0.45rem 0.9rem;
+  }
 
   /* ── Cart ────────────────────────────────────────────────────────────── */
   .cart-shell { position: relative; }

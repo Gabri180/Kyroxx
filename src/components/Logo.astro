@@ -2,20 +2,16 @@
 const { compact = false } = Astro.props;
 ---
 <div class="logo-wrap" aria-label="Kairoxx">
-  <svg viewBox="0 0 150 32" role="img" aria-label="Logo Kairoxx" class:list={[compact && 'compact']}>
+  <svg viewBox="0 0 168 32" role="img" aria-label="Logo Kairoxx" class:list={[compact && 'compact']}>
+    <!-- KX mark -->
     <path d="M8 6v20M8 16L18 6M8 16l10 10" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    <path d="M27 6l-8 10 8 10M27 6l8 10-8 10" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    <path d="M48 24V8h3.5v6.4L58 8h4.1l-6.8 6.7 7.1 9.3h-4.2L53 16.9l-1.5 1.5V24H48Z" fill="currentColor"/>
-    <path d="M66.2 24c-1.7 0-3.1-.5-4.2-1.6-1.1-1-1.7-2.4-1.7-4.2 0-1.7.6-3.1 1.7-4.1 1.1-1.1 2.5-1.6 4.2-1.6 1.8 0 3.2.5 4.3 1.6 1.1 1 1.7 2.4 1.7 4.1 0 1.8-.6 3.2-1.7 4.2-1.1 1.1-2.6 1.6-4.3 1.6Zm0-3c.8 0 1.4-.2 1.9-.8.5-.5.8-1.2.8-2.1 0-.8-.3-1.5-.8-2-.5-.5-1.1-.8-1.9-.8-.7 0-1.3.3-1.8.8-.5.5-.8 1.2-.8 2 0 .9.3 1.6.8 2.1.5.5 1.1.8 1.8.8Z" fill="currentColor"/>
-    <path d="m73.7 24 4.5-5.7-4.4-5.6h4l2.4 3.2 2.4-3.2h4l-4.4 5.6 4.5 5.7h-4.1l-2.4-3.4-2.5 3.4h-4Z" fill="currentColor"/>
-    <path d="m88.1 24 4.5-5.7-4.4-5.6h4l2.4 3.2 2.4-3.2h4l-4.4 5.6 4.5 5.7h-4.1l-2.4-3.4-2.5 3.4h-4Z" fill="currentColor"/>
-    <path d="M108 23.8V8h4.1v12.3h7.4v3.5H108Z" fill="currentColor"/>
-    <path d="M121.7 24V12.7h4V24h-4Zm2-13.1c-.7 0-1.2-.2-1.7-.6-.4-.4-.6-.9-.6-1.5s.2-1.1.6-1.5c.5-.4 1-.6 1.7-.6s1.2.2 1.6.6c.5.4.7.9.7 1.5s-.2 1.1-.7 1.5c-.4.4-.9.6-1.6.6Z" fill="currentColor"/>
-    <path d="M127.8 24V12.7h3.9v1.6c.8-1.2 2-1.8 3.7-1.8 1.3 0 2.3.4 3.1 1.2.8.7 1.2 1.8 1.2 3.3V24h-4v-6.2c0-.7-.2-1.3-.5-1.7-.3-.4-.8-.6-1.5-.6-.8 0-1.3.3-1.7.8-.4.5-.6 1.1-.6 1.9V24h-4Z" fill="currentColor"/>
+    <path d="M30 6l10 20M40 6L30 26" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <!-- KAIROXX text -->
+    <text x="52" y="24" font-family="'Cabinet Grotesk', 'General Sans', sans-serif" font-weight="800" font-size="20" fill="currentColor" letter-spacing="-0.5">KAIROXX</text>
   </svg>
 </div>
 
 <style>
-  .logo-wrap svg { width: 150px; height: auto; }
-  .logo-wrap svg.compact { width: 52px; }
+  .logo-wrap svg { width: 168px; height: auto; }
+  .logo-wrap svg.compact { width: 48px; overflow: visible; }
 </style>

@@ -15,26 +15,7 @@ import { products } from '../lib/products';
       <div class="header-actions">
         <button class="theme-toggle" data-theme-toggle aria-label="Cambiar tema"><span data-theme-icon aria-hidden="true"></span></button>
 
-        <!-- Cart -->
-        <div class="cart-shell" data-cart-shell>
-          <button class="cart-btn" data-cart-toggle aria-label="Carrito">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-            <span class="cart-badge hidden" data-cart-count>0</span>
-          </button>
-          <div class="cart-menu hidden" data-cart-menu>
-            <p class="cart-menu-title">Carrito</p>
-            <div data-cart-items><p class="cart-empty">Tu carrito está vacío.</p></div>
-            <div class="cart-footer hidden" data-cart-footer>
-              <div class="cart-total-row">
-                <span>Total</span>
-                <strong data-cart-total>0€</strong>
-              </div>
-              <a href="#shop" class="btn btn-primary full-btn">Finalizar compra</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="account-shell hidden" data-account-shell>
+<div class="account-shell hidden" data-account-shell>
           <button class="account-button" data-account-toggle aria-label="Abrir menú de cuenta">
             <span class="account-avatar" data-account-avatar>K</span>
           </button>
@@ -51,7 +32,6 @@ import { products } from '../lib/products';
         </div>
 
         <button class="auth-trigger btn btn-soft" data-open-auth="login">Acceder</button>
-        <button class="auth-trigger btn btn-primary desktop-register" data-open-auth="register">Registrarse</button>
       </div>
     </div>
   </header>
@@ -64,12 +44,11 @@ import { products } from '../lib/products';
           <h1>Streetwear limpio para todos los días.</h1>
           <p class="muted">Gorras minimalistas con identidad fuerte. Diseño limpio, acabado integrado DTF y colores neutros pensados para encajar con cualquier estilo urbano.</p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="#shop">Comprar ahora</a>
-            <button class="btn btn-secondary" data-open-auth="register">Crear cuenta</button>
+            <a class="btn btn-primary" href="#shop">Ver colección</a>
           </div>
           <div class="hero-metrics">
-            <div><strong>03</strong><span>modelos base</span></div>
-            <div><strong>24/48H</strong><span>envío express</span></div>
+            <div><strong>01</strong><span>modelo único</span></div>
+            <div><strong>ENVÍOS</strong><span>rápidos y baratos</span></div>
             <div><strong>DTF</strong><span>acabado integrado</span></div>
           </div>
         </div>
@@ -89,7 +68,7 @@ import { products } from '../lib/products';
 
     <section class="drop-band" id="drop">
       <div class="container band-inner">
-        <p>ENVÍO 24/48H &nbsp;·&nbsp; EDICIÓN ESENCIAL &nbsp;·&nbsp; LOGO DISCRETO &nbsp;·&nbsp; STREETWEAR PREMIUM &nbsp;·&nbsp; ACABADO DTF &nbsp;·&nbsp; KX IDENTITY</p>
+        <p>ENVÍOS RÁPIDOS Y BARATOS &nbsp;·&nbsp; EDICIÓN ESENCIAL &nbsp;·&nbsp; LOGO DISCRETO &nbsp;·&nbsp; STREETWEAR PREMIUM &nbsp;·&nbsp; ACABADO DTF &nbsp;·&nbsp; KX IDENTITY</p>
       </div>
     </section>
 
@@ -99,7 +78,7 @@ import { products } from '../lib/products';
           <span class="eyebrow">Shop</span>
           <h2>Colección esencial.</h2>
         </div>
-        <p class="muted">Tres modelos base, diseño limpio. Negro y azul marino como paleta principal con logo KX en formato discreto.</p>
+        <p class="muted">Un modelo, diseño limpio. Negro como paleta principal con logo KX en formato discreto. Stock limitado al primer modelo.</p>
       </div>
       <div class="container product-grid" id="product-grid">
         <div class="grid-loading">
@@ -439,7 +418,7 @@ import { products } from '../lib/products';
               <p class="muted">${p.description || ''}</p>
               <div class="product-bottom">
                 <strong>${Number(p.price).toFixed(0)}€</strong>
-                <button class="btn btn-primary add-cart" data-product="${p.name}" data-price="${p.price}">Añadir</button>
+                <span class="coming-soon-tag">Próximamente</span>
               </div>
             </div>
           </article>`).join('');
@@ -901,6 +880,15 @@ import { products } from '../lib/products';
   .grid-loading span:nth-child(3) { animation-delay: 0.4s; }
   @keyframes pulse { from { opacity: 0.5; } to { opacity: 1; } }
   .empty-msg { color: var(--color-text-muted); padding: var(--space-8) 0; }
+  .coming-soon-tag {
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    padding: 0.45rem 0.9rem;
+  }
 
   /* ── Editorial ─────────────────────────────────────────────────────────── */
   .editorial-grid { display: grid; gap: clamp(var(--space-4), 2vw, var(--space-6)); }
@@ -1026,7 +1014,11 @@ import { products } from '../lib/products';
     .desktop-nav,
     .desktop-register { display: none; }
     .hero-metrics { grid-template-columns: repeat(3, 1fr); max-width: 100%; }
-    .hero-visual img { min-height: 400px; }
+    .hero-visual img {
+      min-height: unset;
+      aspect-ratio: 4 / 3;
+      object-position: center 30%;
+    }
     .product-bottom,
     .hero-actions { flex-direction: column; align-items: stretch; }
   }
